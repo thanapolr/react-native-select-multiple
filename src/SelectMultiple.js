@@ -4,7 +4,7 @@ import { View, FlatList, Text, TouchableWithoutFeedback, Image } from 'react-nat
 import styles from './SelectMultiple.styles'
 import checkbox from '../images/icon-checkbox.png'
 import checkboxChecked from '../images/icon-checkbox-checked.png'
-import { mergeStyles } from './style'
+import { mergeStyles, styledRow } from './style'
 
 const itemType = PropTypes.oneOfType([
   PropTypes.string,
@@ -15,6 +15,12 @@ const styleType = PropTypes.oneOfType([
   PropTypes.object,
   PropTypes.number,
   PropTypes.array
+])
+const rowStyleType = PropTypes.oneOfType([
+  PropTypes.object,
+  PropTypes.number,
+  PropTypes.array,
+  PropTypes.func
 ])
 
 const sourceType = PropTypes.oneOfType([PropTypes.object, PropTypes.number])
@@ -33,13 +39,13 @@ export default class SelectMultiple extends Component {
     renderLabel: PropTypes.func,
     flatListProps: PropTypes.any,
     style: styleType,
-    rowStyle: styleType,
-    checkboxStyle: styleType,
-    labelStyle: styleType,
+    rowStyle: rowStyleType,
+    checkboxStyle: rowStyleType,
+    labelStyle: rowStyleType,
 
-    selectedRowStyle: styleType,
-    selectedCheckboxStyle: styleType,
-    selectedLabelStyle: styleType
+    selectedRowStyle: rowStyleType,
+    selectedCheckboxStyle: rowStyleType,
+    selectedLabelStyle: rowStyleType
   }
 
   static defaultProps = {
@@ -152,13 +158,14 @@ export default class SelectMultiple extends Component {
 
     if (row.item.selected) {
       checkboxSource = selectedCheckboxSource
-      rowStyle = mergeStyles(styles.row, rowStyle, selectedRowStyle)
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle, selectedCheckboxStyle)
-      labelStyle = mergeStyles(styles.label, labelStyle, selectedLabelStyle)
+
+      rowStyle = mergeStyles(styles.row, styledRow(row, rowStyle), styledRow(row, selectedRowStyle))
+      checkboxStyle = mergeStyles(styles.checkbox, styledRow(row, checkboxStyle), styledRow(row, selectedCheckboxStyle))
+      labelStyle = mergeStyles(styles.label, styledRow(row, labelStyle), styledRow(row, selectedLabelStyle))
     } else {
-      rowStyle = mergeStyles(styles.row, rowStyle)
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle)
-      labelStyle = mergeStyles(styles.label, labelStyle)
+      rowStyle = mergeStyles(styles.row, styledRow(row, rowStyle))
+      checkboxStyle = mergeStyles(styles.checkbox, styledRow(row, checkboxStyle))
+      labelStyle = mergeStyles(styles.label, styledRow(row, labelStyle))
     }
 
     return (
