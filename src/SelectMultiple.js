@@ -23,7 +23,11 @@ const rowStyleType = PropTypes.oneOfType([
   PropTypes.func
 ])
 
-const sourceType = PropTypes.oneOfType([PropTypes.object, PropTypes.number])
+const sourceType = PropTypes.oneOfType([
+  PropTypes.object,
+  PropTypes.number,
+  PropTypes.func
+])
 
 // A customizable FlatList that allows you to select multiple rows
 export default class SelectMultiple extends Component {
@@ -157,12 +161,20 @@ export default class SelectMultiple extends Component {
     } = this.props
 
     if (row.item.selected) {
-      checkboxSource = selectedCheckboxSource
+      if (typeof selectedCheckboxSource === 'function') {
+        checkboxSource = selectedCheckboxSource(row)
+      } else {
+        checkboxSource = selectedCheckboxSource
+      }
 
       rowStyle = mergeStyles(styles.row, styledRow(row, rowStyle), styledRow(row, selectedRowStyle))
       checkboxStyle = mergeStyles(styles.checkbox, styledRow(row, checkboxStyle), styledRow(row, selectedCheckboxStyle))
       labelStyle = mergeStyles(styles.label, styledRow(row, labelStyle), styledRow(row, selectedLabelStyle))
     } else {
+      if (typeof checkboxSource === 'function') {
+        checkboxSource = checkboxSource(row)
+      }
+
       rowStyle = mergeStyles(styles.row, styledRow(row, rowStyle))
       checkboxStyle = mergeStyles(styles.checkbox, styledRow(row, checkboxStyle))
       labelStyle = mergeStyles(styles.label, styledRow(row, labelStyle))
